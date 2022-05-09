@@ -1,12 +1,30 @@
-def create_class_point(name, base, attrs): #<- простейший метакласс с помощью функции
-    attrs.update({'MAX_COORD': 100, 'MIN_COORD': 0}) #<- задает атрибуты поумолчанию
-    return type(name, base, attrs)
+from jinja2 import Template
 
+persons = [
+    {'name': 'Вадим', 'old': 18, 'weight': 91},
+    {'name': 'Олег', 'old': 33, 'weight': 78},
+    {'name': 'Егор', 'old': 51, 'weight': 66},
+    {'name': 'Василий', 'old': 18, 'weight': 86},
+    {'name': 'Анатолий', 'old': 22, 'weight': 99},
+]
 
-class Point(metaclass=create_class_point):
-    def get_coord(self):
-        return (0, 0)
+html = """
+{% macro list_users(list_of_users) -%}
+<ul>
+{% for u in list_of_users -%}
+    <li>{{ u.name }} {{ caller(u)}}
+{% endfor -%}
+</ul>
+{%- endmacro %}
 
-pt = Point()
-print(pt.MAX_COORD)
-print(pt.get_coord())
+{% call(user) list_users(users) %}
+    <ul>
+        <li>age: {{user.age}}
+        <li>weight: {{ user.weight }}
+    </ul>
+{%- endcall -%}
+"""
+
+tm = Template(html)
+msg = tm.render(users=persons)
+print(msg)
